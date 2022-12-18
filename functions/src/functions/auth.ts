@@ -7,8 +7,10 @@ export const initUserData = functions.auth.user()
 .onCreate(async (data) => {
     
     const user: User = {
+        balance: 0,
         role: UserRole.User,
-        groups: []
+        groups: [],
+        friends:[],
     }
     await db.collection("users").doc(data.uid).create(user);
 })
