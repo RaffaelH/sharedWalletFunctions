@@ -1,11 +1,9 @@
+import { UserInfo } from "./user-info.interface";
+
 export interface User {
-    balance:number,
-    role: UserRole,
-    groups: string[],
-    friends: string[]
+    userId:string,
+    token:string,
+    displayName:string,
+    friends: UserInfo[]
   }
 
-export enum UserRole{
-    Admin = "admin",
-    User = "user",
-}

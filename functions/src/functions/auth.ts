@@ -1,16 +1,15 @@
 import * as functions from "firebase-functions";
-import {User, UserRole} from "../models/user.interface";
+import {User} from "../models/user.interface";
 
-const db = functions.app.admin.firestore();
+const db:FirebaseFirestore.Firestore = functions.app.admin.firestore();
 
-export const initUserData = functions.auth.user()
-.onCreate(async (data) => {
+export const initUserData = functions.auth.user().onCreate(async (data) => {
     
     const user: User = {
-        balance: 0,
-        role: UserRole.User,
-        groups: [],
-        friends:[],
+        userId: data.uid,
+        displayName:"",
+        token: "",
+        friends: []
     }
     await db.collection("users").doc(data.uid).create(user);
 })
