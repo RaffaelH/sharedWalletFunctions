@@ -12,8 +12,10 @@ export const updateCreditorBalance = functions.firestore.document(TRANSACTION_DO
         await db.collection('balance').where('groupId','==',value.groupId)
         .where('userId','==',value.creditorId).get().then( result => {
                 result.docs.map( async doc => {
+                    functions.logger.log(doc);
                     const oldAmount:number = doc.data().amount;
-                    const newAmount:number = oldAmount + ((debtors.length-1)*value.amount/debtors.length);
+                    const toPay:number = Math.round(value.amount/debtors.length * 100) / 100 
+                    const newAmount:number = oldAmount + value.amount - toPay;
                     return doc.ref.update("amount", newAmount);
                 })
         });
