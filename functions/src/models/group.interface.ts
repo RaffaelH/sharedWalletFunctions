@@ -1,9 +1,9 @@
+import { UserInfo } from "./user-info.interface";
 
 export interface Group{
     groupId: string,
     title: string,
-    memberNames: Array<string>,
-    memberId: Array<string>,
+    members: UserInfo[],
     owner:string,
     created: Date,
 }
