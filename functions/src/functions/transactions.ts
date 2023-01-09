@@ -8,15 +8,22 @@ export const updateCreditorBalance = functions.firestore.document(TRANSACTION_DO
         
         const value = snap.data();
         const debtors = value.debtors;
+        const groupSize = value.debtors.length +1;
         
         await db.collection('balance').where('groupId','==',value.groupId)
         .where('userId','==',value.creditorId).get().then( result => {
                 result.docs.map( async doc => {
                     functions.logger.log(doc);
                     const oldAmount:number = doc.data().amount;
-                    const toPay:number = Math.round(value.amount/debtors.length * 100) / 100 
+                    const toPay:number = value.amount/groupSize
                     const newAmount:number = oldAmount + value.amount - toPay;
-                    return doc.ref.update("amount", newAmount);
+                    const roundedAmount = Math.round(newAmount*100)/100;
+                    functions.logger.log("oldAmount: ",oldAmount);
+      
+                    functions.logger.log("toPay: ",toPay);
+                    functions.logger.log("newAmount: ",newAmount);
+                    functions.logger.log("roundedAmount: ",roundedAmount);
+                    return doc.ref.update("amount", roundedAmount);
                 })
         });
 
@@ -25,8 +32,11 @@ export const updateCreditorBalance = functions.firestore.document(TRANSACTION_DO
             .where('userId','==',debtors[i]).get().then( result => {
                     result.docs.map( async doc => {
                         const oldAmount:number = doc.data().amount;
-                        const newAmount:number = oldAmount - value.amount/debtors.length;
-                        return doc.ref.update("amount", newAmount);
+                        const toPay:number = value.amount/groupSize
+                        const newAmount:number = oldAmount - toPay;
+                        const roundedAmount = Math.round(newAmount*100)/100;
+                   
+                        return doc.ref.update("amount", roundedAmount);
                     })
             });
         }
